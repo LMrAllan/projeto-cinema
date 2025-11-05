@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Salas</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="other-page">
+    <nav>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="cadastro-filmes.html">Cadastro de Filmes</a></li>
+            <li><a href="cadastro-salas.html">Cadastro de Salas</a></li>
+            <li><a href="cadastro-sessoes.html">Cadastro de Sessões</a></li>
+            <li><a href="venda-ingressos.html">Venda de Ingressos</a></li>
+            <li><a href="sessoes.html">Sessões Disponíveis</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Cadastro de Salas</h1>
+        
+        <form id="form-sala">
+            <div class="form-group">
+                <label for="nome">Nome da Sala:</label>
+                <input type="text" id="nome" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="capacidade">Capacidade:</label>
+                <input type="number" id="capacidade" min="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="tipo">Tipo:</label>
+                <select id="tipo" required>
+                    <option value="">Selecione</option>
+                    <option value="2D">2D</option>
+                    <option value="3D">3D</option>
+                    <option value="IMAX">IMAX</option>
+                </select>
+            </div>
+            
+            <button type="submit">Salvar Sala</button>
+        </form>
+    </main>
+
+    <script src="../js/salas.js"></script>
+</body>
+</html>
