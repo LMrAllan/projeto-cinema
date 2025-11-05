@@ -1,27 +1,37 @@
 function listarSessoes() {
     const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
     const container = document.getElementById('lista-sessoes');
+    const noSessions = document.getElementById('no-sessions');
     
     if (sessoes.length === 0) {
-        container.innerHTML = '<p>Nenhuma sessão disponível.</p>';
+        container.innerHTML = '';
+        noSessions.style.display = 'block';
         return;
     }
     
+    noSessions.style.display = 'none';
     container.innerHTML = '';
+    
     sessoes.forEach(sessao => {
         const data = new Date(sessao.dataHora);
+        const dataFormatada = isNaN(data.getTime()) ? 'Data inválida' : data.toLocaleString();
+        
         const sessaoElement = document.createElement('div');
-        sessaoElement.className = 'sessao-item';
+        sessaoElement.className = 'col-md-6 mb-3';
         sessaoElement.innerHTML = `
-            <h3>${sessao.filmeTitulo}</h3>
-            <p><strong>Sala:</strong> ${sessao.salaNome}</p>
-            <p><strong>Data e Hora:</strong> ${data.toLocaleString()}</p>
-            <p><strong>Preço:</strong> R$ ${sessao.preco.toFixed(2)}</p>
-            <p><strong>Idioma:</strong> ${sessao.idioma}</p>
-            <p><strong>Formato:</strong> ${sessao.formato}</p>
-            <div class="sessao-actions">
-                <a href="venda-ingressos.html?sessaoId=${sessao.id}" class="btn-comprar">Comprar Ingresso</a>
-                <button class="btn-excluir" onclick="excluirSessao(${sessao.id})">Excluir Sessão</button>
+            <div class="card h-100">
+                <div class="card-body text-white">
+                    <h5 class="card-title">${sessao.filmeTitulo || 'Título não definido'}</h5>
+                    <p class="card-text"><strong>Sala:</strong> ${sessao.salaNome || 'Sala não definida'}</p>
+                    <p class="card-text"><strong>Data e Hora:</strong> ${dataFormatada}</p>
+                    <p class="card-text"><strong>Preço:</strong> R$ ${sessao.preco ? sessao.preco.toFixed(2) : '0.00'}</p>
+                    <p class="card-text"><strong>Idioma:</strong> ${sessao.idioma || 'Não definido'}</p>
+                    <p class="card-text"><strong>Formato:</strong> ${sessao.formato || 'Não definido'}</p>
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a href="venda-ingressos.html?sessaoId=${sessao.id}" class="btn btn-success me-md-2">Comprar Ingresso</a>
+                        <button class="btn btn-danger" onclick="excluirSessao(${sessao.id})">Excluir</button>
+                    </div>
+                </div>
             </div>
         `;
         container.appendChild(sessaoElement);
@@ -31,64 +41,15 @@ function listarSessoes() {
 function excluirSessao(sessaoId) {
     if (confirm('Tem certeza que deseja excluir esta sessão?')) {
         let sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
-        
-        // Verificar se há ingressos vendidos para esta sessão
-        const ingressos = JSON.parse(localStorage.getItem('ingressos')) || [];
-        const ingressosDaSessao = ingressos.filter(ingresso => ingresso.sessaoId === sessaoId);
-        
-        if (ingressosDaSessao.length > 0) {
-            if (!confirm(`Esta sessão possui ${ingressosDaSessao.length} ingresso(s) vendido(s). Deseja excluir mesmo assim?`)) {
-                return;
-            }
-        }
-        
-        // Remover a sessão
         sessoes = sessoes.filter(sessao => sessao.id !== sessaoId);
         localStorage.setItem('sessoes', JSON.stringify(sessoes));
-        
-        // Remover ingressos relacionados a esta sessão
-        const ingressosAtualizados = ingressos.filter(ingresso => ingresso.sessaoId !== sessaoId);
-        localStorage.setItem('ingressos', JSON.stringify(ingressosAtualizados));
         
         alert('Sessão excluída com sucesso!');
         listarSessoes();
     }
 }
 
-// Carregar sessão específica se veio por parâmetro
-function carregarSessaoParametro() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessaoId = urlParams.get('sessaoId');
-    
-    if (sessaoId) {
-        const sessoes = JSON.parse(localStorage.getItem('sessoes')) || [];
-        const sessao = sessoes.find(s => s.id == sessaoId);
-        
-        if (sessao) {
-            const container = document.getElementById('lista-sessoes');
-            const data = new Date(sessao.dataHora);
-            
-            container.innerHTML = `
-                <div class="sessao-item">
-                    <h3>${sessao.filmeTitulo}</h3>
-                    <p><strong>Sala:</strong> ${sessao.salaNome}</p>
-                    <p><strong>Data e Hora:</strong> ${data.toLocaleString()}</p>
-                    <p><strong>Preço:</strong> R$ ${sessao.preco.toFixed(2)}</p>
-                    <p><strong>Idioma:</strong> ${sessao.idioma}</p>
-                    <p><strong>Formato:</strong> ${sessao.formato}</p>
-                    <div class="sessao-actions">
-                        <a href="venda-ingressos.html?sessaoId=${sessao.id}" class="btn-comprar">Comprar Ingresso</a>
-                        <button class="btn-excluir" onclick="excluirSessao(${sessao.id})">Excluir Sessão</button>
-                    </div>
-                </div>
-            `;
-        }
-    }
-}
-
 // Inicializar
-if (window.location.search.includes('sessaoId')) {
-    carregarSessaoParametro();
-} else {
+document.addEventListener('DOMContentLoaded', function() {
     listarSessoes();
-}
+});
